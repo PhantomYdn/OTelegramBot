@@ -23,7 +23,6 @@ import org.orienteer.core.component.structuretable.OrienteerStructureTable;
 import org.orienteer.core.widget.AbstractModeAwareWidget;
 import org.orienteer.core.widget.Widget;
 import org.orienteer.telegram.module.OTelegramCustomAttributes;
-import org.orienteer.telegram.module.OTelegramModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.ydn.wicket.wicketorientdb.components.TransactionlessForm;
@@ -50,10 +49,10 @@ public class OTelegramBotWidget extends AbstractModeAwareWidget<OClass> {
 	public OTelegramBotWidget(String id, IModel<OClass> model, IModel<ODocument> widgetDocumentModel) {
 		super(id, model, widgetDocumentModel);
 		Form<OClass> form = new TransactionlessForm<OClass>("form");
-		propertiesList.add(OTelegramCustomAttributes.TELEGRAM_SEARCH.get().getName());
-		propertiesList.add(OTelegramCustomAttributes.TELEGRAM_DOCUMENTS_LIST.get().getName());
-		propertiesList.add(OTelegramCustomAttributes.TELEGRAM_CLASS_DESCRIPTION.get().getName());
-		propertiesList.add(OTelegramCustomAttributes.TELEGRAM_SEARCH_QUERY.get().getName());
+		propertiesList.add(OTelegramCustomAttributes.TELEGRAM_SEARCH.getOrCreate().getName());
+		propertiesList.add(OTelegramCustomAttributes.TELEGRAM_DOCUMENTS_LIST.getOrCreate().getName());
+		propertiesList.add(OTelegramCustomAttributes.TELEGRAM_CLASS_DESCRIPTION.getOrCreate().getName());
+		propertiesList.add(OTelegramCustomAttributes.TELEGRAM_SEARCH_QUERY.getOrCreate().getName());
 		structureTable = new OrienteerStructureTable<OClass, String>("attributes", model, propertiesList) {
 
 			@Override
@@ -72,13 +71,13 @@ public class OTelegramBotWidget extends AbstractModeAwareWidget<OClass> {
 							mode = DisplayMode.VIEW;
 						}
 						if (DisplayMode.VIEW.equals(mode)) {
-							if (critery.equals(OTelegramCustomAttributes.TELEGRAM_SEARCH_QUERY.get().getName())) {
+							if (critery.equals(OTelegramCustomAttributes.TELEGRAM_SEARCH_QUERY.getOrCreate().getName())) {
 								return new Label(id, getModel());
 							} else {
 								return new BooleanViewPanel(id, Model.<Boolean>of(getModel()));
 							}
 						} else if (DisplayMode.EDIT.equals(mode)){
-							if (critery.equals(OTelegramCustomAttributes.TELEGRAM_SEARCH_QUERY.get().getName())) {
+							if (critery.equals(OTelegramCustomAttributes.TELEGRAM_SEARCH_QUERY.getOrCreate().getName())) {
 								return new TextField(id, getModel());
 							} else return new BooleanEditPanel(id, Model.<Boolean>of(getModel()));
 						}

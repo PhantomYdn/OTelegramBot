@@ -26,7 +26,7 @@ public enum OTelegramCustomAttributes {
         this.hiearchical = hiearchical;
     }
 
-    public CustomAttribute get() {
+    public CustomAttribute getOrCreate() {
         CustomAttribute result = CustomAttribute.getIfExists(name);
         return result != null ? result : CustomAttribute.create(name, type, defaultValue, encode, hiearchical);
     }
