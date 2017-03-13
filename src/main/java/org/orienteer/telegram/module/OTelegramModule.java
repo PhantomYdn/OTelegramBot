@@ -10,6 +10,7 @@ import org.orienteer.core.module.IOrienteerModule;
 import org.orienteer.core.util.OSchemaHelper;
 import org.orienteer.telegram.bot.OTelegramBot;
 import org.orienteer.telegram.bot.handler.LongPolligHandlerConfig;
+import org.orienteer.telegram.bot.handler.OTelegramLongPollingHandler;
 import org.orienteer.telegram.bot.handler.WebHookHandlerConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,23 +24,18 @@ import org.telegram.telegrambots.updatesreceivers.BotSession;
 public class OTelegramModule extends AbstractOrienteerModule {
 
 	private static final Logger LOG = LoggerFactory.getLogger(OTelegramModule.class);
-	private static final String NAME = "telegram";
-	private static final String OCLASS_NAME = "OTelegramBotTest";
-	private static final String OPROPERTY_USERNAME = "username";
-	private static final String OPROPERTY_TOKEN = "token";
-	private static final String OPROPERTY_USER_SESSION = "user_session";
-	private static final String OPROPERTY_WEB_HOOK_ENABLE = "web_hook_enable";
-	private static final String OPROPERTY_WEB_HOOK_HOST = "web_hook_host";
-	private static final String OPROPERTY_WEB_HOOK_PORT = "web_hook_port";
-	private static final String OPROPERTY_WEB_HOOK_PATH_TO_CERTIFICATE_KEY = "path_to_certificate_public_key";
+
+	private static final String NAME                                         = "telegram";
+	private static final String OCLASS_NAME                                  = "OTelegramBotTest";
+	private static final String OPROPERTY_USERNAME                           = "username";
+	private static final String OPROPERTY_TOKEN                              = "token";
+	private static final String OPROPERTY_USER_SESSION                       = "user_session";
+	private static final String OPROPERTY_WEB_HOOK_ENABLE                    = "web_hook_enable";
+	private static final String OPROPERTY_WEB_HOOK_HOST                      = "web_hook_host";
+	private static final String OPROPERTY_WEB_HOOK_PORT                      = "web_hook_port";
+	private static final String OPROPERTY_WEB_HOOK_PATH_TO_CERTIFICATE_KEY   = "path_to_certificate_public_key";
 	private static final String OPROPERTY_WEB_HOOK_PATH_TO_CERTIFICATE_STORE = "path_to_certificate_store";
-	private static final String OPROPERTY_WEB_HOOK_CERTIFICATE_PASSWORD = "certificate_password";
-
-
-	public static final CustomAttribute TELEGRAM_SEARCH 			= CustomAttribute.create("orienteer.telegramSearch", OType.BOOLEAN, false, false, false);
-	public static final CustomAttribute TELEGRAM_DOCUMENTS_LIST 	= CustomAttribute.create("orienteer.telegramDocumentsList", OType.BOOLEAN, false, false, false);
-	public static final CustomAttribute TELEGRAM_SEARCH_QUERY 		= CustomAttribute.create("orienteer.telegramSearchQuery", OType.STRING, null, true, false);
-	public static final CustomAttribute TELEGRAM_CLASS_DESCRIPTION 	= CustomAttribute.create("orienteer.telegramClassDescription", OType.BOOLEAN, false, false, false);
+	private static final String OPROPERTY_WEB_HOOK_CERTIFICATE_PASSWORD      = "certificate_password";
 
 	private BotSession botSession;
 
@@ -85,7 +81,8 @@ public class OTelegramModule extends AbstractOrienteerModule {
 				} else {
 					telegramBotsApi = new TelegramBotsApi();
 					LongPolligHandlerConfig longPolligHandlerConfig = readLongPollingBotConfig(moduleDoc);
-					botSession = telegramBotsApi.registerBot(OTelegramBot.getLongPollingBot(longPolligHandlerConfig));
+					OTelegramLongPollingHandler longPollingBot = OTelegramBot.getLongPollingBot(longPolligHandlerConfig);
+					botSession = telegramBotsApi.registerBot(longPollingBot);
 				}
 			}
 
@@ -130,7 +127,9 @@ public class OTelegramModule extends AbstractOrienteerModule {
 
 	@Override
 	public void onDestroy(OrienteerWebApplication app, ODatabaseDocument db, ODocument moduleDoc) {
-		if (botSession != null) botSession.close();
+		if (botSession != null) {
+			botSession.close();
+		}
 	}
 
 }
