@@ -33,7 +33,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-
 /**
  * @author Vitaliy Gonchar
  */
@@ -42,22 +41,21 @@ public class OTelegramBotWidget extends AbstractModeAwareWidget<OClass> {
 	private static final long serialVersionUID = 1L;
 	private static final Logger LOG = LoggerFactory.getLogger(OTelegramBotWidget.class);
 
-	private OrienteerStructureTable<OClass, String> structureTable;
+	private OrienteerStructureTable<OClass, CustomAttribute> structureTable;
 
-	private List<String> propertiesList = new ArrayList<>();
+	private List<CustomAttribute> propertiesList = new ArrayList<>();
 	
 	public OTelegramBotWidget(String id, IModel<OClass> model, IModel<ODocument> widgetDocumentModel) {
 		super(id, model, widgetDocumentModel);
 		Form<OClass> form = new TransactionlessForm<OClass>("form");
-		propertiesList.add(OTelegramModule.TELEGRAM_SEARCH.getName());
-		propertiesList.add(OTelegramModule.TELEGRAM_DOCUMENTS_LIST.getName());
-		propertiesList.add(OTelegramModule.TELEGRAM_CLASS_DESCRIPTION.getName());
-		propertiesList.add(OTelegramModule.TELEGRAM_SEARCH_QUERY.getName());
-		structureTable = new OrienteerStructureTable<OClass, String>("attributes", model, propertiesList) {
-
+		propertiesList.add(OTelegramModule.TELEGRAM_SEARCH);
+		propertiesList.add(OTelegramModule.TELEGRAM_DOCUMENTS_LIST);
+		propertiesList.add(OTelegramModule.TELEGRAM_CLASS_DESCRIPTION);
+		propertiesList.add(OTelegramModule.TELEGRAM_SEARCH_QUERY);
+		structureTable = new OrienteerStructureTable<OClass, CustomAttribute>("attributes", model, propertiesList) {
 			@Override
-			protected Component getValueComponent(String id, IModel<String> rowModel) {
-				return new OClassMetaPanel<Object>(id, getModeModel(), getModel(), rowModel) {
+			protected Component getValueComponent(String id, IModel<CustomAttribute> rowModel) {
+				return new OClassMetaPanel<Object>(id, getModeModel(), getModel(), Model.of(rowModel.getObject().getName())) {
 					@Override
 					protected Object getValue(OClass entity, String critery) {
 						CustomAttribute customAttribute = CustomAttribute.get(critery);
@@ -92,7 +90,6 @@ public class OTelegramBotWidget extends AbstractModeAwareWidget<OClass> {
 				};
 			}
 		};
-
 		structureTable.addCommand(new EditSchemaCommand<OClass>(structureTable, getModeModel()));
 		structureTable.addCommand(new SaveSchemaCommand<OClass>(structureTable, getModeModel()));
 		form.add(structureTable);
