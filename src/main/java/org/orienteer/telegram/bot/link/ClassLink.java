@@ -9,7 +9,7 @@ import org.orienteer.telegram.bot.Cache;
 import org.orienteer.telegram.bot.MessageKey;
 import org.orienteer.telegram.bot.OTelegramBot;
 import org.orienteer.telegram.bot.response.BotState;
-import org.orienteer.telegram.module.OTelegramCustomAttributes;
+import org.orienteer.telegram.module.OTelegramModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
@@ -64,7 +64,7 @@ public class ClassLink {
                 } else builder.append(MessageKey.WITHOUT_SUPER_CLASSES.getString(locale));
                 builder.append("\n");
                 List<String> resultList = new ArrayList<>();
-                if (OTelegramCustomAttributes.TELEGRAM_CLASS_DESCRIPTION.getOrCreate().getValue(oClass)) {
+                if (OTelegramModule.TELEGRAM_CLASS_DESCRIPTION.getValue(oClass)) {
                     Collection<OProperty> properties = oClass.properties();
                     for (OProperty property : properties) {
                         resultList.add(String.format(MessageKey.HTML_STRONG_TEXT.toString(), property.getName())
@@ -78,7 +78,7 @@ public class ClassLink {
                 }
                 ORecordIteratorClass<ODocument> oDocuments = oDatabaseDocument.browseClass(oClass.getName());
                 resultList = new ArrayList<>();
-                if (OTelegramCustomAttributes.TELEGRAM_DOCUMENTS_LIST.getOrCreate().getValue(oClass)) {
+                if (OTelegramModule.TELEGRAM_DOCUMENTS_LIST.getValue(oClass)) {
                     builder.append("\n");
                     builder.append(String.format(MessageKey.HTML_STRONG_TEXT.toString(), MessageKey.CLASS_DOCUMENTS.getString(locale)));
                     builder.append("\n");

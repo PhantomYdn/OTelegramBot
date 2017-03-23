@@ -22,7 +22,7 @@ import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.structuretable.OrienteerStructureTable;
 import org.orienteer.core.widget.AbstractModeAwareWidget;
 import org.orienteer.core.widget.Widget;
-import org.orienteer.telegram.module.OTelegramCustomAttributes;
+import org.orienteer.telegram.module.OTelegramModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.ydn.wicket.wicketorientdb.components.TransactionlessForm;
@@ -33,7 +33,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-
 /**
  * @author Vitaliy Gonchar
  */
@@ -42,22 +41,21 @@ public class OTelegramBotWidget extends AbstractModeAwareWidget<OClass> {
 	private static final long serialVersionUID = 1L;
 	private static final Logger LOG = LoggerFactory.getLogger(OTelegramBotWidget.class);
 
-	private OrienteerStructureTable<OClass, String> structureTable;
+	private OrienteerStructureTable<OClass, CustomAttribute> structureTable;
 
-	private List<String> propertiesList = new ArrayList<>();
+	private List<CustomAttribute> propertiesList = new ArrayList<>();
 	
 	public OTelegramBotWidget(String id, IModel<OClass> model, IModel<ODocument> widgetDocumentModel) {
 		super(id, model, widgetDocumentModel);
 		Form<OClass> form = new TransactionlessForm<OClass>("form");
-		propertiesList.add(OTelegramCustomAttributes.TELEGRAM_SEARCH.getOrCreate().getName());
-		propertiesList.add(OTelegramCustomAttributes.TELEGRAM_DOCUMENTS_LIST.getOrCreate().getName());
-		propertiesList.add(OTelegramCustomAttributes.TELEGRAM_CLASS_DESCRIPTION.getOrCreate().getName());
-		propertiesList.add(OTelegramCustomAttributes.TELEGRAM_SEARCH_QUERY.getOrCreate().getName());
-		structureTable = new OrienteerStructureTable<OClass, String>("attributes", model, propertiesList) {
-
+		propertiesList.add(OTelegramModule.TELEGRAM_SEARCH);
+		propertiesList.add(OTelegramModule.TELEGRAM_DOCUMENTS_LIST);
+		propertiesList.add(OTelegramModule.TELEGRAM_CLASS_DESCRIPTION);
+		propertiesList.add(OTelegramModule.TELEGRAM_SEARCH_QUERY);
+		structureTable = new OrienteerStructureTable<OClass, CustomAttribute>("attributes", model, propertiesList) {
 			@Override
-			protected Component getValueComponent(String id, IModel<String> rowModel) {
-				return new OClassMetaPanel<Object>(id, getModeModel(), getModel(), rowModel) {
+			protected Component getValueComponent(String id, IModel<CustomAttribute> rowModel) {
+				return new OClassMetaPanel<Object>(id, getModeModel(), getModel(), Model.of(rowModel.getObject().getName())) {
 					@Override
 					protected Object getValue(OClass entity, String critery) {
 						CustomAttribute customAttribute = CustomAttribute.get(critery);
@@ -71,13 +69,13 @@ public class OTelegramBotWidget extends AbstractModeAwareWidget<OClass> {
 							mode = DisplayMode.VIEW;
 						}
 						if (DisplayMode.VIEW.equals(mode)) {
-							if (critery.equals(OTelegramCustomAttributes.TELEGRAM_SEARCH_QUERY.getOrCreate().getName())) {
+							if (critery.equals(OTelegramModule.TELEGRAM_SEARCH_QUERY.getName())) {
 								return new Label(id, getModel());
 							} else {
 								return new BooleanViewPanel(id, Model.<Boolean>of(getModel()));
 							}
 						} else if (DisplayMode.EDIT.equals(mode)){
-							if (critery.equals(OTelegramCustomAttributes.TELEGRAM_SEARCH_QUERY.getOrCreate().getName())) {
+							if (critery.equals(OTelegramModule.TELEGRAM_SEARCH_QUERY.getName())) {
 								return new TextField(id, getModel());
 							} else return new BooleanEditPanel(id, Model.<Boolean>of(getModel()));
 						}
@@ -92,7 +90,6 @@ public class OTelegramBotWidget extends AbstractModeAwareWidget<OClass> {
 				};
 			}
 		};
-
 		structureTable.addCommand(new EditSchemaCommand<OClass>(structureTable, getModeModel()));
 		structureTable.addCommand(new SaveSchemaCommand<OClass>(structureTable, getModeModel()));
 		form.add(structureTable);

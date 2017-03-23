@@ -37,7 +37,12 @@ public class OTelegramModule extends AbstractOrienteerModule {
 	private static final String OPROPERTY_WEB_HOOK_PATH_TO_CERTIFICATE_STORE = "path_to_certificate_store";
 	private static final String OPROPERTY_WEB_HOOK_CERTIFICATE_PASSWORD      = "certificate_password";
 
-	private BotSession botSession;
+	public static final CustomAttribute TELEGRAM_SEARCH = CustomAttribute.getOrCreate("orienteer.telegramSearch", OType.BOOLEAN, false, false, false);
+    public static final CustomAttribute TELEGRAM_DOCUMENTS_LIST = CustomAttribute.getOrCreate("orienteer.telegramDocumentsList", OType.BOOLEAN, false, false, false);
+	public static final CustomAttribute TELEGRAM_SEARCH_QUERY = CustomAttribute.getOrCreate("orienteer.telegramSearchQuery", OType.STRING, null, true, false);
+	public static final CustomAttribute TELEGRAM_CLASS_DESCRIPTION = CustomAttribute.getOrCreate("orienteer.telegramClassDescription", OType.BOOLEAN, false, false, false);
+
+    private BotSession botSession;
 
 	protected OTelegramModule() {
 		super(NAME, 1);
